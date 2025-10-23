@@ -6,20 +6,17 @@ import os
 
 app = Flask(__name__)
 
-
 try:
     if os.getenv('VERCEL'):
         MONGO_URI = os.getenv('MONGODB_URI')
         if not MONGO_URI:
-            raise Exception("MONGODB_URI environment variable not set")
+            raise Exception("MONGODB_URI no configurada")
     else:
         from config import MONGO_URI
     
     client = MongoClient(MONGO_URI)
     db = client['todo_app']
     collection = db['todos']
-    client.admin.command('ping')
-    print("Conectado a MongoDB Atlas exitosamente!")
 except Exception as e:
     print(f"Error conectando a MongoDB Atlas: {e}")
     collection = None
