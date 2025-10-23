@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h1>Lista de Tareas</h1>
+    
+    <table class="todos-table">
+        <tr>
+            <th>Tarea</th>
+            <th>Día Añadida</th>
+            <th>Acciones</th>
+        </tr>
+        {% for todo in todos %}
+        <tr>
+            <td>{{ todo.tarea }}</td>
+            <td>{{ todo.day_added }}</td>
+            <td>
+                <a href="{{ url_for('update_todo', todo_id=todo._id) }}">Update</a>
+                <a href="{{ url_for('delete_todo', todo_id=todo._id) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br>
+    
+    <form method="POST" action="{{ url_for('add_todo') }}">
+        <input type="text" name="tarea" placeholder="Nueva tarea" required>
+        <input type="submit" value="Añadir Tarea">
+    </form>
+    </div>
+    
+</body>
+</html>
