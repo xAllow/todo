@@ -18,24 +18,19 @@ try:
     client = MongoClient(MONGO_URI)
     db = client['todo_app']
     collection = db['todos']
-    # Verificar conexión
     client.admin.command('ping')
     print("Conectado a MongoDB Atlas exitosamente!")
 except Exception as e:
     print(f"Error conectando a MongoDB Atlas: {e}")
-    # En caso de error, usar una lista vacía como fallback
     collection = None
 
 @app.route('/')
 def index():
     if collection is None:
-        # Fallback si no hay conexión a MongoDB
         todos = []
     else:
-        # Obtener todas las tareas de MongoDB
         todos = list(collection.find())
-        
-        # Convertir ObjectId a string para el template
+
         for todo in todos:
             todo['_id'] = str(todo['_id'])
 
@@ -51,7 +46,6 @@ def add_todo():
             'day_added': datetime.now().strftime('%Y-%m-%d'),
             'created_at': datetime.now()
         }
-        # Insertar en MongoDB
         collection.insert_one(new_todo)
     
     return redirect(url_for('index'))
@@ -59,7 +53,6 @@ def add_todo():
 @app.route('/delete/<todo_id>')
 def delete_todo(todo_id):
     if collection is not None:
-        # Eliminar de MongoDB usando ObjectId
         collection.delete_one({'_id': ObjectId(todo_id)})
     return redirect(url_for('index'))
 
@@ -71,14 +64,12 @@ def update_todo(todo_id):
     if request.method == 'POST':
         tarea = request.form.get('tarea')
         if tarea:
-            # Actualizar en MongoDB
             collection.update_one(
                 {'_id': ObjectId(todo_id)}, 
                 {'$set': {'tarea': tarea}}
             )
         return redirect(url_for('index'))
-    
-    # GET: Mostrar formulario de edición
+
     todo = collection.find_one({'_id': ObjectId(todo_id)})
     if not todo:
         return redirect(url_for('index'))
